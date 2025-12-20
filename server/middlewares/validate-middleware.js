@@ -3,15 +3,13 @@ const validate = (schema) => async (req, res, next) => {
     const parsedBody = await schema.parseAsync(req.body);
     req.body = parsedBody;
     next();
-  } catch (error) {
-    return res.status(400).json({
-      message:
-        error?.errors?.[0]?.message ||
-        error?.message ||
-        "Validation failed",
+  } catch (err) {
+    // DO NOT touch err.errors directly
+    return next({
+      status: 422,
+      message: err?.message || "Validation failed",
     });
   }
 };
 
 module.exports = validate;
-
